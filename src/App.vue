@@ -1,26 +1,233 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div id="app" class="chat-container">
+    <NavItem/>
+    <div class="chat-box">
+      <div class="messages">
+        <MessageItem
+          v-for="(msg, index) in messages"
+          :key="index"
+          :content="msg.content"
+          :isUser="msg.isUser"
+        />
+      </div>
+      <div class="input-box">
+        <input
+          v-model="newMessage"
+          type="text"
+          placeholder="輸入訊息..."
+          @keyup.enter="sendMessage"
+        />
+        <button @click="sendMessage">送出</button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import MessageItem from "./components/MessageItem.vue";
+import NavItem from "./components/nav.vue";
+import { computed } from 'vue';
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    HelloWorld
+    MessageItem,
+    NavItem,
+  },
+  data() {
+    return {
+      api_url: "",
+      isLogIn: true,
+      userId: 1,
+      conversationId: -1,
+      newMessage: "",
+      messages: [
+        { content: "你好！有什麼需要幫忙的嗎？", isUser: false },
+      ],
+      json_web_token: "",
+    };
+  },
+  methods: {
+    logout(){
+      this.isLogIn=false;
+    },
+    sendMessage() {
+      if (this.newMessage.trim() === "") return;
+      this.send_message_to_backend();
+      // 新增使用者訊息
+      this.messages.push({ content: this.newMessage, isUser: true });
+
+      // 模擬對方回覆
+      setTimeout(() => {
+        this.messages.push({
+          content: "這是自動回覆的訊息。",
+          isUser: false,
+        });
+      }, 1000);
+
+      // 清空輸入框
+      this.newMessage = "";
+    },
+    async create_new_conversation() {
+      try {
+        console.log('request to create new conversation.')
+        // const data={
+          
+        // }
+        //const token=this.access_token;
+        const queryParams = new URLSearchParams({
+          user_id: this.user_id,
+        }).toString();
+        const response = await fetch(`${this.api_url}/ai/v1/api/new_conversation/?${queryParams}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            // 'Authorization': `Bearer ${token}`
+          }, 
+          // body: JSON.stringify(data) 
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const result = await response.json();
+        console.log(result);
+      } catch (error) {
+        console.error('發送請求時出錯：', error);
+      }
+    },
+    async send_message_to_backend() {
+      try {
+        if(this.conversationId==-1) this.create_new_conversation();
+        if(this.conversationId==-1){
+          this.messages.push({
+            content: "建立對話失敗。",
+            isUser: false,
+          });
+        }
+        console.log('request to send message.')
+        const data={
+          'conversation_id': this.conversationId,
+          'messages': this.newMessage
+        }
+        //const token=this.access_token;
+        const response = await fetch(`${this.api_url}/ai/v1/api/completion/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            // 'Authorization': `Bearer ${token}`
+          }, 
+          body: JSON.stringify(data) 
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+        let partialData = "";
+        let shouldContinue = true;
+        while (shouldContinue) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          partialData += decoder.decode(value, { stream: true });
+
+          // 按行解析數據
+          const lines = partialData.split("\n\n");
+          partialData = lines.pop(); // 保留最後一段不完整數據
+          for (const line of lines) {
+            if (line.startsWith("data:")) {
+              const jsonData = JSON.parse(line.slice(5)); // 去掉 "data:"
+              this.messages.push({
+                content: jsonData.content,
+                isUser: false,
+              });
+            }
+          }
+        }
+      } catch (error) {
+        console.error('發送請求時出錯：', error);
+      }
+    }
+  },
+  mounted(){
+    // 取得網址中的查詢參數
+    const queryString = window.location.search;
+
+    // 使用 URLSearchParams 解析查詢參數
+    const urlParams = new URLSearchParams(queryString);
+
+    // 取得特定的請求關鍵字
+    const keyword = urlParams.get('id'); // 假設關鍵字參數名稱是 'keyword'
+    this.json_web_token=keyword;
+    console.log('id:', keyword);
+  },
+  provide(){
+    return{
+      isLogIn : computed(() => this.isLogIn),
+      logout: this.logout,
+    }
   }
-}
+};
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+<style scoped>
+#app{
+  display: flex;
+  flex-direction: column;
+}
+.chat-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.chat-box {
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.messages {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  background-color: #f9f9f9;
+}
+
+.input-box {
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+  background-color: #fff;
+}
+
+input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  outline: none;
+}
+
+button {
+  margin-left: 10px;
+  padding: 8px 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
 }
 </style>
