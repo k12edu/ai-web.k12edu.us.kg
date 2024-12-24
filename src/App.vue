@@ -27,7 +27,9 @@
 import MessageItem from "./components/MessageItem.vue";
 import NavItem from "./components/nav.vue";
 import { computed } from 'vue';
-
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 export default {
   name: "App",
   components: {
@@ -48,6 +50,7 @@ export default {
     };
   },
   methods: {
+    
     logout(){
       this.isLogIn=false;
     },
