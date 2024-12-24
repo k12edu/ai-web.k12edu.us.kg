@@ -142,7 +142,7 @@ export default {
         let decoder = new TextDecoder();
         let done = false;
         let result = '';
-        
+        console.log('= =');
         while (!done) {
           const { value, done: doneReading } = await reader.read();
           done = doneReading;
@@ -166,7 +166,9 @@ export default {
                 
                 // 這裡處理每段返回的 JSON 資料
                 console.log(parsedData.data.answer); // 顯示答案部分
-                
+                if(parsedData.data.answer != undefined || parsedData.data.answer!=''){
+                  this.messages.push({ content: parsedData.data.answer, isUser: false });
+                }
               } catch (error) {
                 console.error('Failed to parse JSON:', error);
               }
