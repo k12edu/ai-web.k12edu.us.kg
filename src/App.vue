@@ -137,6 +137,7 @@ export default {
           body: JSON.stringify(data) // 傳遞的data
         });
         if (!response.ok) {
+          this.messages.push({ content: '出現錯誤，請換一句話重新傳送!', isUser: false });
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         // 讀取 response 的流資料
