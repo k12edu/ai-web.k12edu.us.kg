@@ -91,6 +91,7 @@ export default {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const result = await response.json();
+        this.conversationId = result.chat_id;
         console.log(result);
       } catch (error) {
         console.error('發送請求時出錯：', error);
@@ -105,10 +106,12 @@ export default {
             isUser: false,
           });
         }
+        '{"question": "你是誰?", "stream": true, "session_id":"8843c6dcc1fb11efa9d40242c0a89006"}'
         console.log('request to send message.')
         const data={
-          'conversation_id': this.conversationId,
-          'messages': this.newMessage
+          'session_id': this.conversationId,
+          'question': this.newMessage,
+          'stream': true
         }
         //const token=this.access_token;
         const response = await fetch(`${this.api_url}/ai/v1/api/completion/`, {
@@ -123,28 +126,11 @@ export default {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder("utf-8");
-        let partialData = "";
-        let shouldContinue = true;
-        while (shouldContinue) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          partialData += decoder.decode(value, { stream: true });
-
-          // 按行解析數據
-          const lines = partialData.split("\n\n");
-          partialData = lines.pop(); // 保留最後一段不完整數據
-          for (const line of lines) {
-            if (line.startsWith("data:")) {
-              const jsonData = JSON.parse(line.slice(5)); // 去掉 "data:"
-              this.messages.push({
-                content: jsonData.content,
-                isUser: false,
-              });
-            }
-          }
-        }
+        const result = await response.json();
+        this.messages.push({
+          content: result.data.answer,
+          isUser: false,
+        });
       } catch (error) {
         console.error('發送請求時出錯：', error);
       }
