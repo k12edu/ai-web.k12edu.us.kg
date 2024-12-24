@@ -100,7 +100,10 @@ export default {
     },
     async send_message_to_backend() {
       try {
-        if(this.conversationId==-1) this.create_new_conversation();
+        if(this.conversationId==-1){
+          this.create_new_conversation();
+          await delay(2000); 
+        }
         if(this.conversationId==-1){
           this.messages.push({
             content: "建立對話失敗。",
