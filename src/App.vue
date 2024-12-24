@@ -148,7 +148,7 @@ export default {
 
         // 移除每段回應資料中的 'data:' 字串
         const cleanResult = result.replace(/^data:/, '').trim();
-        console.log(cleanResult);
+        console.log('cleanResult'+cleanResult);
         // 最後解析所有收到的資料
         try {
           const parsedResult = JSON.parse(cleanResult);
