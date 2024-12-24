@@ -121,6 +121,7 @@ export default {
           'stream': true,
           'session_id': this.conversationId
         }
+        console.log(data);
         console.log('q='+JSON.stringify(data) );
         //const token=this.access_token;
 
