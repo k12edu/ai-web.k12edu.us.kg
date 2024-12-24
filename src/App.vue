@@ -146,21 +146,28 @@ export default {
           result += decoder.decode(value, { stream: true });
         }
 
-        // 移除每段回應資料中的 'data:' 字串
-        const cleanResult = result.replace(/^data:/, '').trim();
-        console.log('cleanResult'+cleanResult);
-        // 最後解析所有收到的資料
-        try {
-          const parsedResult = JSON.parse(cleanResult);
-          console.log(parsedResult);
-          this.messages.push({
-            content: parsedResult.data.answer,
-            isUser: false,
-          });
-        } catch (error) {
-          console.error('Failed to parse JSON:', error.message);
-          console.log('Received data:', cleanResult);  // 顯示清理過後的資料以便排查
-        }
+        // 逐段處理並移除 'data:' 前綴
+        const chunks = result.split('\n'); // 假設每個回應段是以換行分隔的
+
+        chunks.forEach(chunk => {
+          if (chunk.startsWith('data:')) {
+            // 移除 'data:' 並進行 JSON 解析
+            const cleanChunk = chunk.replace(/^data:/, '').trim();
+
+            try {
+              // 嘗試解析 JSON
+              const parsedResult = JSON.parse(cleanChunk);
+              console.log('Parsed result:', parsedResult);  // 顯示解析結果
+              this.messages.push({
+                content: parsedResult.data.answer,  // 假設要使用 'answer' 欄位
+                isUser: false,
+              });
+            } catch (error) {
+              console.error('Failed to parse JSON:', error.message);
+              console.log('Invalid data chunk:', cleanChunk);  // 顯示無效的資料塊
+            }
+          }
+        });
       } catch (error) {
         console.error('發送請求時出錯：', error);
       }
