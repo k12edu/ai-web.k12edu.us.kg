@@ -142,6 +142,7 @@ export default {
         let decoder = new TextDecoder();
         let done = false;
         let result = '';
+        let first_push=false;
         while (!done) {
           const { value, done: doneReading } = await reader.read();
           done = doneReading;
@@ -156,7 +157,7 @@ export default {
           result = lines.pop();
           console.log(lines);
           // 處理每行資料
-          let first_push=false;
+         
           for (let line of lines) {
             if (line.startsWith('data:')) {
               // 去除前綴 `data:` 並解析 JSON
