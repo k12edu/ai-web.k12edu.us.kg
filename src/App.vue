@@ -136,7 +136,9 @@ export default {
           },
           body: JSON.stringify(data) // 傳遞的data
         });
-
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         // 讀取 response 的流資料
         const reader = response.body.getReader();
         let decoder = new TextDecoder();
