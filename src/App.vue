@@ -117,9 +117,9 @@ export default {
         }
         console.log('request to send message.')
         const data={
-          'session_id': this.conversationId,
           'question': this.question,
-          'stream': true
+          'stream': true,
+          'session_id': this.conversationId
         }
         console.log('q='+JSON.stringify(data) );
         //const token=this.access_token;
