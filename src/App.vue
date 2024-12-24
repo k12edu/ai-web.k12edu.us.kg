@@ -125,46 +125,54 @@ export default {
         //const token=this.access_token;
 
         const response = await fetch(`http://100.73.132.110:60004/api/v1/chats/b4dbf55cc1c911ef80f40242c0a89006/completions`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ragflow-EyNDY4NjRlYzFjYTExZWZiMmJmMDI0Mm`
-          },
-          body: JSON.stringify(data)
-        }).then(response => {
-          const reader = response.body.getReader();  // 確保正確使用 response
-          let chunks = [];
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ragflow-EyNDY4NjRlYzFjYTExZWZiMmJmMDI0Mm`
+        },
+        body: JSON.stringify(data)
+      }).then(response => {
+        const reader = response.body.getReader();
+        let chunks = [];
 
-          // 使用遞歸方式逐步讀取數據
-          function read() {
-            return reader.read().then(result => {
-              if (result.done) {
-                return chunks;  // 完成後返回所有數據
+        // 讀取流中的數據
+        function read() {
+          return reader.read().then(result => {
+            if (result.done) {
+              // 所有數據讀取完畢，將它們合併成一個字串
+              const completeData = new TextDecoder().decode(new Uint8Array(chunks));
+
+              // 去掉開頭的 'data:' 部分
+              const cleanedData = completeData.replace(/^data:/, '').trim();
+
+              try {
+                // 解析去除 'data:' 部分後的 JSON
+                const jsonData = JSON.parse(cleanedData);
+                return jsonData;
+              } catch (error) {
+                console.error('JSON parse error:', error);
+                return null;
               }
+            }
 
-              chunks.push(result.value);
-              return read();  // 繼續讀取
-            });
-          }
+            // 將這一部分資料加入數據集中
+            chunks.push(result.value);
+            return read();
+          });
+        }
 
-          return read();  // 啟動讀取
-        }).then(data => {
-          // 這裡處理讀取的數據
-          const decodedData = new TextDecoder().decode(new Uint8Array(data));  // 解碼
-          console.log('Decoded data:', decodedData);
-
-          // 嘗試解析 JSON 數據
-          try {
-            const parsedResult = JSON.parse(decodedData);
-            console.log('Parsed result:', parsedResult);
-            // 進一步處理你的數據
-          } catch (error) {
-            console.error('Failed to parse JSON:', error.message);
-          }
-        }).catch(error => {
-          console.error('Request failed', error);  // 捕獲任何錯誤
-        });
-        console.log('res='+response);
+        // 開始讀取
+        return read();
+      }).then(data => {
+        // 在這裡處理解析後的數據
+        if (data) {
+          console.log('Parsed data:', data);
+          // 假設您需要從解析的 JSON 中獲取 "answer" 欄位
+          console.log('Answer:', data.data.answer);
+        }
+      }).catch(error => {
+        console.error('Error:', error);
+      });
 
       } catch (error) {
         console.error('發送請求時出錯：', error);
