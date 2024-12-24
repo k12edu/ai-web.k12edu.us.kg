@@ -156,6 +156,7 @@ export default {
           result = lines.pop();
           console.log(lines);
           // 處理每行資料
+          let first_push=false;
           for (let line of lines) {
             if (line.startsWith('data:')) {
               // 去除前綴 `data:` 並解析 JSON
@@ -165,8 +166,12 @@ export default {
                 
                 // 這裡處理每段返回的 JSON 資料
                 console.log(parsedData.data.answer); // 顯示答案部分
-                if((parsedData.data.answer != undefined || parsedData.data.answer!='')&&parsedData.data.prompt ){
+                if((parsedData.data.answer != undefined || parsedData.data.answer!='')&& first_push==false){
                   this.messages.push({ content: parsedData.data.answer, isUser: false });
+                  first_push=true;
+                }
+                else if(parsedData.data.answer != undefined || parsedData.data.answer!=''){
+                  this.messages[this.messages.length-1]=parsedData.data.answer;
                 }
               } catch (error) {
                 console.error('Failed to parse JSON:', error);
