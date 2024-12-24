@@ -119,6 +119,7 @@ export default {
           'question': this.newMessage,
           'stream': true
         }
+        console.log('q='+data);
         //const token=this.access_token;
         const response = await fetch(`http://100.73.132.110:60004/api/v1/chats/b4dbf55cc1c911ef80f40242c0a89006/completions`, {
           method: 'POST',
