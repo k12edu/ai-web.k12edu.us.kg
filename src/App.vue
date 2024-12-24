@@ -158,8 +158,7 @@ export default {
               // 嘗試解析 JSON
               const parsedResult = JSON.parse(cleanChunk);
               // console.log('Parsed result:', parsedResult);  // 顯示解析結果
-              if(parsedResult.data.answer!=''){
-                console.log('log'+parsedResult.data.answer);
+              if(parsedResult.data.answer!='' || parsedResult.data.answer!=undefined){
                 this.messages.push({
                   content: parsedResult.data.answer,  // 假設要使用 'answer' 欄位
                   isUser: false,
