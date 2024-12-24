@@ -59,12 +59,12 @@ export default {
       this.messages.push({ content: this.newMessage, isUser: true });
 
       // 模擬對方回覆
-      setTimeout(() => {
-        this.messages.push({
-          content: "這是自動回覆的訊息。",
-          isUser: false,
-        });
-      }, 1000);
+      // setTimeout(() => {
+      //   this.messages.push({
+      //     content: "這是自動回覆的訊息。",
+      //     isUser: false,
+      //   });
+      // }, 1000);
 
       // 清空輸入框
       this.newMessage = "";
@@ -157,7 +157,7 @@ export default {
             try {
               // 嘗試解析 JSON
               const parsedResult = JSON.parse(cleanChunk);
-              console.log('Parsed result:', parsedResult);  // 顯示解析結果
+              // console.log('Parsed result:', parsedResult);  // 顯示解析結果
               this.messages.push({
                 content: parsedResult.data.answer,  // 假設要使用 'answer' 欄位
                 isUser: false,
