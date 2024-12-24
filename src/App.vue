@@ -157,7 +157,7 @@ export default {
 
           // 可能剩下未完全接收到的數據，保留最後一行並繼續
           result = lines.pop();
-
+          console(lines);
           // 處理每行資料
           for (let line of lines) {
             if (line.startsWith('data:')) {
