@@ -159,6 +159,7 @@ export default {
               const parsedResult = JSON.parse(cleanChunk);
               // console.log('Parsed result:', parsedResult);  // 顯示解析結果
               if(parsedResult.data.answer!=''){
+                console.log('log'+parsedResult.data.answer);
                 this.messages.push({
                   content: parsedResult.data.answer,  // 假設要使用 'answer' 欄位
                   isUser: false,
