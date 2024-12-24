@@ -127,6 +127,7 @@ export default {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const result = await response.json();
+        console.log(result);
         this.messages.push({
           content: result.data.answer,
           isUser: false,
