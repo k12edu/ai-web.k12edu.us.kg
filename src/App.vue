@@ -131,50 +131,23 @@ export default {
           'Authorization': `Bearer ragflow-EyNDY4NjRlYzFjYTExZWZiMmJmMDI0Mm`
         },
         body: JSON.stringify(data)
-      });
+      }).then(response=> {
+        const reader = reader.body.getReader()
+        let data = []
+        return reader.read().then(read = (result)=>{
+          if(result.done){
+            return data
+          }
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+          data.push(result.value)
+          return reader.read().then(read)
+        })
+      })
+      .then(data => {
+        // Do whatever you want with your data
+      })
 
-      // 建立讀取器，逐步讀取流
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let done = false;
-      let result = '';
-
-      // 持續讀取資料直到讀取完畢
-      while (!done) {
-        const { value, done: readerDone } = await reader.read();
-        done = readerDone;
-
-        // 將這段回應資料轉換為字串
-        result += decoder.decode(value, { stream: true });
-      }
-
-      // 顯示完整的回應資料
-      console.log('Received raw data:', result);
-
-      // 嘗試解析所有資料
-      try {
-        const parsedResult = JSON.parse(result); // 直接解析所有資料
-        console.log('Parsed result:', parsedResult);
-
-        // 檢查是否有 `answer` 欄位並推送
-        if (parsedResult.data && parsedResult.data.answer) {
-          this.messages.push({
-            content: parsedResult.data.answer,  // 使用 'answer' 欄位作為內容
-            isUser: false,
-          });
-        } else {
-          console.log('Received data without answer:', parsedResult);
-        }
-      } catch (error) {
-        console.error('Failed to parse JSON:', error.message);
-        console.log('Invalid data:', result);  // 顯示未解析的原始資料
-      }
-
-
+      console.log('res= '+response);
 
       } catch (error) {
         console.error('發送請求時出錯：', error);
