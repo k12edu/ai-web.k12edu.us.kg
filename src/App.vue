@@ -53,8 +53,8 @@ export default {
     },
     sendMessage() {
       if (this.newMessage.trim() === "") return;
-      this.create_new_conversation();
-      //this.send_message_to_backend();
+      //this.create_new_conversation();
+      this.send_message_to_backend();
       // 新增使用者訊息
       this.messages.push({ content: this.newMessage, isUser: true });
 
@@ -82,7 +82,7 @@ export default {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ragflow-dmM2NkYzA0ODMwZDExZWZiODcyMDI0Mm'
+            'Authorization': 'Bearer ragflow-EyNDY4NjRlYzFjYTExZWZiMmJmMDI0Mm'
             // 'Authorization': `Bearer ${token}`
           }, 
           body: JSON.stringify(data) 
@@ -107,7 +107,6 @@ export default {
             isUser: false,
           });
         }
-        '{"question": "你是誰?", "stream": true, "session_id":"8843c6dcc1fb11efa9d40242c0a89006"}'
         console.log('request to send message.')
         const data={
           'session_id': this.conversationId,
@@ -119,7 +118,7 @@ export default {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            // 'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ragflow-EyNDY4NjRlYzFjYTExZWZiMmJmMDI0Mm`
           }, 
           body: JSON.stringify(data) 
         });
