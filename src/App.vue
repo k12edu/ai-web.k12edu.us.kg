@@ -27,9 +27,7 @@
 import MessageItem from "./components/MessageItem.vue";
 import NavItem from "./components/nav.vue";
 import { computed } from 'vue';
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+
 export default {
   name: "App",
   components: {
@@ -50,7 +48,6 @@ export default {
     };
   },
   methods: {
-    
     logout(){
       this.isLogIn=false;
     },
@@ -102,6 +99,9 @@ export default {
       }
     },
     async send_message_to_backend() {
+      function delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
       try {
         if(this.conversationId==-1){
           this.create_new_conversation();
