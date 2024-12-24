@@ -36,7 +36,7 @@ export default {
   },
   data() {
     return {
-      api_url: "",
+      api_url: "http://192.168.0.237",
       isLogIn: true,
       userId: 1,
       conversationId: -1,
@@ -75,16 +75,16 @@ export default {
           
         // }
         //const token=this.access_token;
-        const queryParams = new URLSearchParams({
-          user_id: this.user_id,
-        }).toString();
-        const response = await fetch(`${this.api_url}/ai/v1/api/new_conversation/?${queryParams}`, {
-          method: 'GET',
+        const data = { name: "new session" };
+
+        const response = await fetch(`http://100.73.132.110:60004/api/v1/chats/b4dbf55cc1c911ef80f40242c0a89006/sessions`, {
+          method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': 'Bearer ragflow-dmM2NkYzA0ODMwZDExZWZiODcyMDI0Mm'
             // 'Authorization': `Bearer ${token}`
           }, 
-          // body: JSON.stringify(data) 
+          body: JSON.stringify(data) 
         });
 
         if (!response.ok) {
