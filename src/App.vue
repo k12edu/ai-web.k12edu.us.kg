@@ -96,6 +96,7 @@ export default {
         const result = await response.json();
         this.conversationId = result.chat_id;
         console.log(result);
+        console.log('id=',this.conversationId);
       } catch (error) {
         console.error('發送請求時出錯：', error);
       }
@@ -107,7 +108,7 @@ export default {
       try {
         if(this.conversationId==-1){
           this.create_new_conversation();
-          await delay(2000); 
+          await delay(4000); 
         }
         if(this.conversationId==-1){
           this.messages.push({
