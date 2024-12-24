@@ -157,10 +157,6 @@ export default {
           console.error('Failed to parse JSON:', error.message);
           console.log('Received data:', result);  // 顯示收到的資料以便排查
         }
-        this.messages.push({
-          content: result.data.answer,
-          isUser: false,
-        });
       } catch (error) {
         console.error('發送請求時出錯：', error);
       }
