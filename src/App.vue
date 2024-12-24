@@ -36,6 +36,7 @@ export default {
   },
   data() {
     return {
+      question: "",
       api_url: "http://192.168.0.237",
       isLogIn: true,
       userId: 1,
@@ -57,7 +58,7 @@ export default {
       this.send_message_to_backend();
       // 新增使用者訊息
       this.messages.push({ content: this.newMessage, isUser: true });
-
+      this.question = this.messages;
       // 模擬對方回覆
       // setTimeout(() => {
       //   this.messages.push({
@@ -116,10 +117,9 @@ export default {
         console.log('request to send message.')
         const data={
           'session_id': this.conversationId,
-          'question': this.newMessage,
+          'question': this.question,
           'stream': true
         }
-        console.log('q='+JSON.stringify(data) );
         //const token=this.access_token;
         const response = await fetch(`http://100.73.132.110:60004/api/v1/chats/b4dbf55cc1c911ef80f40242c0a89006/completions`, {
           method: 'POST',
