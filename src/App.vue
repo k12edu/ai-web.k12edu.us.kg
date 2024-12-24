@@ -55,10 +55,11 @@ export default {
     sendMessage() {
       if (this.newMessage.trim() === "") return;
       //this.create_new_conversation();
-      this.send_message_to_backend();
-      // 新增使用者訊息
       this.messages.push({ content: this.newMessage, isUser: true });
       this.question = this.newMessage;
+      this.send_message_to_backend();
+      // 新增使用者訊息
+      
       // 模擬對方回覆
       // setTimeout(() => {
       //   this.messages.push({
