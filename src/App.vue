@@ -58,7 +58,7 @@ export default {
       this.send_message_to_backend();
       // 新增使用者訊息
       this.messages.push({ content: this.newMessage, isUser: true });
-      this.question = this.messages;
+      this.question = this.newMessage;
       // 模擬對方回覆
       // setTimeout(() => {
       //   this.messages.push({
