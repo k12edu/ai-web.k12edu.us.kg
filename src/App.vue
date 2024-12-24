@@ -158,10 +158,12 @@ export default {
               // 嘗試解析 JSON
               const parsedResult = JSON.parse(cleanChunk);
               // console.log('Parsed result:', parsedResult);  // 顯示解析結果
-              this.messages.push({
-                content: parsedResult.data.answer,  // 假設要使用 'answer' 欄位
-                isUser: false,
-              });
+              if(parsedResult.data.answer!=''){
+                this.messages.push({
+                  content: parsedResult.data.answer,  // 假設要使用 'answer' 欄位
+                  isUser: false,
+                });
+              }
             } catch (error) {
               console.error('Failed to parse JSON:', error.message);
               console.log('Invalid data chunk:', cleanChunk);  // 顯示無效的資料塊
