@@ -171,7 +171,7 @@ export default {
                   this.messages.push({ content: parsedData.data.answer, isUser: false });
                   first_push=true;
                 }
-                else if((parsedData.data.answer != undefined || parsedData.data.answer!='' ) && this.messages.length>0){
+                else if((parsedData.data.answer != undefined || parsedData.data.answer!='' )&& arsedData.data.answer && this.messages.length>0){
                   this.messages[this.messages.length-1].content=parsedData.data.answer;
                 }
               } catch (error) {
