@@ -144,7 +144,9 @@ export default {
         let result = '';
         console.log('= =');
         while (!done) {
+          console.log('= =1');
           const { value, done: doneReading } = await reader.read();
+          console.log('= =2');
           done = doneReading;
 
           // 將二進位數據解碼為字符串
