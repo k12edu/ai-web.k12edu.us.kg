@@ -125,29 +125,46 @@ export default {
         //const token=this.access_token;
 
         const response = await fetch(`http://100.73.132.110:60004/api/v1/chats/b4dbf55cc1c911ef80f40242c0a89006/completions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ragflow-EyNDY4NjRlYzFjYTExZWZiMmJmMDI0Mm`
-        },
-        body: JSON.stringify(data)
-      }).then(response=> {
-        const reader = reader.body.getReader()
-        let data = []
-        return reader.read().then(read = (result)=>{
-          if(result.done){
-            return data
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ragflow-EyNDY4NjRlYzFjYTExZWZiMmJmMDI0Mm`
+          },
+          body: JSON.stringify(data)
+        }).then(response => {
+          const reader = response.body.getReader();  // 確保正確使用 response
+          let chunks = [];
+
+          // 使用遞歸方式逐步讀取數據
+          function read() {
+            return reader.read().then(result => {
+              if (result.done) {
+                return chunks;  // 完成後返回所有數據
+              }
+
+              chunks.push(result.value);
+              return read();  // 繼續讀取
+            });
           }
 
-          data.push(result.value)
-          return reader.read().then(read)
-        })
-      })
-      .then(data => {
-        // Do whatever you want with your data
-      })
+          return read();  // 啟動讀取
+        }).then(data => {
+          // 這裡處理讀取的數據
+          const decodedData = new TextDecoder().decode(new Uint8Array(data));  // 解碼
+          console.log('Decoded data:', decodedData);
 
-      console.log('res= '+response);
+          // 嘗試解析 JSON 數據
+          try {
+            const parsedResult = JSON.parse(decodedData);
+            console.log('Parsed result:', parsedResult);
+            // 進一步處理你的數據
+          } catch (error) {
+            console.error('Failed to parse JSON:', error.message);
+          }
+        }).catch(error => {
+          console.error('Request failed', error);  // 捕獲任何錯誤
+        });
+
 
       } catch (error) {
         console.error('發送請求時出錯：', error);
