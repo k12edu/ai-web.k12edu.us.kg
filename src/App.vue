@@ -94,7 +94,7 @@ export default {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const result = await response.json();
-        this.conversationId = result.data.chat_id;
+        this.conversationId = result.data.id;
         console.log(result);
         console.log('id=',this.conversationId);
       } catch (error) {
