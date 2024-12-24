@@ -164,7 +164,7 @@ export default {
         }).catch(error => {
           console.error('Request failed', error);  // 捕獲任何錯誤
         });
-
+        console.log('res='+response);
 
       } catch (error) {
         console.error('發送請求時出錯：', error);
