@@ -123,65 +123,57 @@ export default {
         }
         console.log('q='+JSON.stringify(data) );
         //const token=this.access_token;
-        let hasPushed = false;  // 用來檢查是否已經推送過資料
 
         const response = await fetch(`http://100.73.132.110:60004/api/v1/chats/b4dbf55cc1c911ef80f40242c0a89006/completions`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ragflow-EyNDY4NjRlYzFjYTExZWZiMmJmMDI0Mm`
-          },
-          body: JSON.stringify(data)
-        });
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ragflow-EyNDY4NjRlYzFjYTExZWZiMmJmMDI0Mm`
+        },
+        body: JSON.stringify(data)
+      });
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // 建立讀取器，逐步讀取流
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let done = false;
+      let result = '';
+
+      // 持續讀取資料直到讀取完畢
+      while (!done) {
+        const { value, done: readerDone } = await reader.read();
+        done = readerDone;
+
+        // 將這段回應資料轉換為字串
+        result += decoder.decode(value, { stream: true });
+      }
+
+      // 顯示完整的回應資料
+      console.log('Received raw data:', result);
+
+      // 嘗試解析所有資料
+      try {
+        const parsedResult = JSON.parse(result); // 直接解析所有資料
+        console.log('Parsed result:', parsedResult);
+
+        // 檢查是否有 `answer` 欄位並推送
+        if (parsedResult.data && parsedResult.data.answer) {
+          this.messages.push({
+            content: parsedResult.data.answer,  // 使用 'answer' 欄位作為內容
+            isUser: false,
+          });
+        } else {
+          console.log('Received data without answer:', parsedResult);
         }
+      } catch (error) {
+        console.error('Failed to parse JSON:', error.message);
+        console.log('Invalid data:', result);  // 顯示未解析的原始資料
+      }
 
-        // 建立讀取器，逐步讀取流
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let done = false;
-        let result = '';
-
-        while (!done) {
-          const { value, done: readerDone } = await reader.read();
-          done = readerDone;
-
-          // 將這段回應資料轉換為字串
-          result += decoder.decode(value, { stream: true });
-        }
-
-        // 逐段處理並移除 'data:' 前綴
-        const chunks = result.split('\n'); // 假設每個回應段是以換行分隔的
-
-        chunks.forEach(chunk => {
-          if (chunk.startsWith('data:')) {
-            // 移除 'data:' 並進行 JSON 解析
-            const cleanChunk = chunk.replace(/^data:/, '').trim();
-
-            try {
-              // 嘗試解析 JSON
-              const parsedResult = JSON.parse(cleanChunk);
-
-              // 無論是否包含 'prompt' 欄位，都處理並推送 'answer' 資料
-              console.log('Parsed result:', parsedResult);  // 顯示解析結果
-
-              if (parsedResult.data && parsedResult.data.answer) {
-                this.messages.push({
-                  content: parsedResult.data.answer,  // 使用 'answer' 欄位作為內容
-                  isUser: false,
-                });
-              } else {
-                console.log('Received data without answer:', parsedResult);
-              }
-
-            } catch (error) {
-              console.error('Failed to parse JSON:', error.message);
-              console.log('Invalid data chunk:', cleanChunk);  // 顯示無效的資料塊
-            }
-          }
-        });
 
 
       } catch (error) {
