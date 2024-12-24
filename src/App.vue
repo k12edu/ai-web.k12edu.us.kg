@@ -132,6 +132,7 @@ export default {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
+        // 建立讀取器，逐步讀取流
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let done = false;
@@ -145,9 +146,12 @@ export default {
           result += decoder.decode(value, { stream: true });
         }
 
+        // 移除每段回應資料中的 'data:' 字串
+        const cleanResult = result.replace(/^data:/, '').trim();
+
         // 最後解析所有收到的資料
         try {
-          const parsedResult = JSON.parse(result);
+          const parsedResult = JSON.parse(cleanResult);
           console.log(parsedResult);
           this.messages.push({
             content: parsedResult.data.answer,
@@ -155,7 +159,7 @@ export default {
           });
         } catch (error) {
           console.error('Failed to parse JSON:', error.message);
-          console.log('Received data:', result);  // 顯示收到的資料以便排查
+          console.log('Received data:', cleanResult);  // 顯示清理過後的資料以便排查
         }
       } catch (error) {
         console.error('發送請求時出錯：', error);
