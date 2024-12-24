@@ -132,12 +132,35 @@ export default {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        // const result = await response.json();
-        // console.log(result);
-        // this.messages.push({
-        //   content: result.data.answer,
-        //   isUser: false,
-        // });
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let done = false;
+        let result = '';
+
+        while (!done) {
+          const { value, done: readerDone } = await reader.read();
+          done = readerDone;
+
+          // 將這段回應資料轉換為字串
+          result += decoder.decode(value, { stream: true });
+        }
+
+        // 最後解析所有收到的資料
+        try {
+          const parsedResult = JSON.parse(result);
+          console.log(parsedResult);
+          this.messages.push({
+            content: parsedResult.data.answer,
+            isUser: false,
+          });
+        } catch (error) {
+          console.error('Failed to parse JSON:', error.message);
+          console.log('Received data:', result);  // 顯示收到的資料以便排查
+        }
+        this.messages.push({
+          content: result.data.answer,
+          isUser: false,
+        });
       } catch (error) {
         console.error('發送請求時出錯：', error);
       }
