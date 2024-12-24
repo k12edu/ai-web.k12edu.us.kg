@@ -164,17 +164,16 @@ export default {
               // 嘗試解析 JSON
               const parsedResult = JSON.parse(cleanChunk);
 
-              // 檢查 'prompt' 欄位是否存在
-              if (parsedResult.data && parsedResult.data.prompt) {
-                // 只有在包含 'prompt' 欄位的資料時，才推送
-                console.log('Parsed result with prompt:', parsedResult);  // 顯示解析結果
+              // 無論是否包含 'prompt' 欄位，都處理並推送 'answer' 資料
+              console.log('Parsed result:', parsedResult);  // 顯示解析結果
+
+              if (parsedResult.data && parsedResult.data.answer) {
                 this.messages.push({
-                  content: parsedResult.data.answer,  // 假設要使用 'answer' 欄位
+                  content: parsedResult.data.answer,  // 使用 'answer' 欄位作為內容
                   isUser: false,
                 });
               } else {
-                // 如果回應中不包含 'prompt' 欄位，可以選擇忽略這一段資料
-                console.log('Received data without prompt:', parsedResult);
+                console.log('Received data without answer:', parsedResult);
               }
 
             } catch (error) {
@@ -183,6 +182,7 @@ export default {
             }
           }
         });
+
 
       } catch (error) {
         console.error('發送請求時出錯：', error);
