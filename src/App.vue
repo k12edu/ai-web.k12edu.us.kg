@@ -142,11 +142,8 @@ export default {
         let decoder = new TextDecoder();
         let done = false;
         let result = '';
-        console.log('= =');
         while (!done) {
-          console.log('= =1');
           const { value, done: doneReading } = await reader.read();
-          console.log('= =2');
           done = doneReading;
 
           // 將二進位數據解碼為字符串
@@ -168,7 +165,7 @@ export default {
                 
                 // 這裡處理每段返回的 JSON 資料
                 console.log(parsedData.data.answer); // 顯示答案部分
-                if(parsedData.data.answer != undefined || parsedData.data.answer!=''){
+                if((parsedData.data.answer != undefined || parsedData.data.answer!='')&&parsedData.data.prompt ){
                   this.messages.push({ content: parsedData.data.answer, isUser: false });
                 }
               } catch (error) {
