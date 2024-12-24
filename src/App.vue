@@ -123,18 +123,21 @@ export default {
         }
         console.log('q='+JSON.stringify(data) );
         //const token=this.access_token;
+        let hasPushed = false;  // 用來檢查是否已經推送過資料
+
         const response = await fetch(`http://100.73.132.110:60004/api/v1/chats/b4dbf55cc1c911ef80f40242c0a89006/completions`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ragflow-EyNDY4NjRlYzFjYTExZWZiMmJmMDI0Mm`
-          }, 
-          body: JSON.stringify(data) 
+          },
+          body: JSON.stringify(data)
         });
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
+
         // 建立讀取器，逐步讀取流
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
@@ -163,12 +166,15 @@ export default {
 
               // 檢查 'prompt' 欄位是否存在
               if (parsedResult.data && parsedResult.data.prompt) {
-                // 只在包含 'prompt' 欄位的資料時推送
+                // 只有在包含 'prompt' 欄位的資料時，才推送
                 console.log('Parsed result with prompt:', parsedResult);  // 顯示解析結果
                 this.messages.push({
                   content: parsedResult.data.answer,  // 假設要使用 'answer' 欄位
                   isUser: false,
                 });
+              } else {
+                // 如果回應中不包含 'prompt' 欄位，可以選擇忽略這一段資料
+                console.log('Received data without prompt:', parsedResult);
               }
 
             } catch (error) {
@@ -177,6 +183,7 @@ export default {
             }
           }
         });
+
       } catch (error) {
         console.error('發送請求時出錯：', error);
       }
