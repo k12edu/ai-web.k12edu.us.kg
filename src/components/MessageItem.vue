@@ -32,11 +32,13 @@
       // 這個方法會為每個程式碼區塊加上複製按鈕
       addCopyButtons(markdownContent) {
         const codeBlockRegex = /<pre><code class="language-(\w+)">([\s\S]*?)<\/code><\/pre>/g;
-        return markdownContent.replace(codeBlockRegex, (match, language, code) => {
-          // 建立複製按鈕
-          const button = `<button class="copy-btn" data-clipboard-text="${code}">複製</button>`;
-          return `${button}<pre><code class="language-${language}">${code}</code></pre>`;
-        });
+          const updatedContent = markdownContent.replace(codeBlockRegex, (match, language, code) => {
+            // 建立複製按鈕
+            const button = `<button class="copy-btn" data-clipboard-text="${code}">複製</button>`;
+            return `${button}<pre><code class="language-${language}">${code}</code></pre>`;
+          });
+          console.log(updatedContent);
+          return updatedContent;
       },
     },
     mounted() {
