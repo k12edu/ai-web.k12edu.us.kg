@@ -27,7 +27,7 @@
         const markdownContent = marked(this.content);
         return this.addCopyButtons(markdownContent);
       },
-    },
+    }, 
     methods: {
       // 這個方法會為每個程式碼區塊加上複製按鈕
       addCopyButtons(markdownContent) {
