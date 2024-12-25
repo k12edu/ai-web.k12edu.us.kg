@@ -8,7 +8,7 @@
   
   <script>
  import { marked } from 'marked';
- import ClipboardJS from 'clipboard';
+ import { ClipboardJS } from 'clipboard';
   export default {
     name: "MessageItem",
     props: {
