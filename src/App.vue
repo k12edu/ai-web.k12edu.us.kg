@@ -57,6 +57,7 @@ export default {
       //this.create_new_conversation();
       this.messages.push({ content: this.newMessage, isUser: true });
       this.question = this.newMessage;
+      this.newMessage = "";
       this.send_message_to_backend();
       // 新增使用者訊息
       
@@ -69,7 +70,7 @@ export default {
       // }, 1000);
 
       // 清空輸入框
-      this.newMessage = "";
+      
     },
     async create_new_conversation() {
       try {
@@ -136,7 +137,7 @@ export default {
           },
           body: JSON.stringify(data) // 傳遞的data
         });
-        if (!response.ok) {
+        if (!response.ok && (response.status === 400 || response.status === 500)) {
           this.messages.push({ content: '出現錯誤，請換一句話重新傳送!', isUser: false });
           throw new Error(`HTTP error! status: ${response.status}`);
         }
