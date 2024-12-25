@@ -46,6 +46,7 @@
         // 初始化複製按鈕功能
         new ClipboardJS('.copy-btn');
       });
+      new ClipboardJS('.copy-btn');
     },
   };
   </script>
