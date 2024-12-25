@@ -71,17 +71,17 @@
   }
 
   .copy-btn {
-    margin-left: 2;
-  padding: 2px 3;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
+    margin-left: 10px; /* 調整邊距 */
+    padding: 5px 10px; /* 調整內邊距 */
+    background-color: #007bff; /* 設定按鈕背景顏色 */
+    color: white; /* 設定按鈕文字顏色 */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
 
-.copy-btn:hover {
-  background-color: #0056b3;
-}
+  .copy-btn:hover {
+    background-color: #0056b3; /* 設定懸停時背景顏色 */
+  }
   </style>
   
