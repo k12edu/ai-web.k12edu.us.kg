@@ -72,10 +72,9 @@
   }
 
   .copy-btn {
-    /* display: none; */
     margin-left: 10px; /* 調整邊距 */
     padding: 5px 10px; /* 調整內邊距 */
-    background-color: #007bff; /* 設定按鈕背景顏色 */
+    background-color: #007bff !important; /* 設定按鈕背景顏色 */
     color: white; /* 設定按鈕文字顏色 */
     border: none;
     border-radius: 4px;
