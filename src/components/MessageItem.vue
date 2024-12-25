@@ -31,22 +31,26 @@
     methods: {
       // 這個方法會為每個程式碼區塊加上複製按鈕
       addCopyButtons(markdownContent) {
-        const codeBlockRegex = /<pre><code class="language-(\w+)">([\s\S]*?)<\/code><\/pre>/g;
-          const updatedContent = markdownContent.replace(codeBlockRegex, (match, language, code) => {
-            // 建立複製按鈕
-            const button = `<button class="copy-btn" data-clipboard-text="${code}">複製</button>`;
-            console.log(button);
-            return `${button}<pre><code class="language-${language}">${code}</code></pre>`;
-          });
-          console.log(updatedContent);
-          return updatedContent;
+      const codeBlockRegex = /<pre><code class="language-(\w+)">([\s\S]*?)<\/code><\/pre>/g;
+      const updatedContent = markdownContent.replace(codeBlockRegex, (match, language, code) => {
+          // 建立複製按鈕
+          const button = `<button class="copy-btn" data-clipboard-text="${code}">複製</button>`;
+          return `${button}<pre><code class="language-${language}">${code}</code></pre>`;
+        });
+        // 確保在 DOM 更新後初始化 ClipboardJS
+        this.$nextTick(() => {
+          this.initializeClipboard();
+        });
+        return updatedContent;
       },
+
+      // 主動初始化 ClipboardJS
       initializeClipboard() {
         // 先清理先前的實例
         if (this.clipboard) {
           this.clipboard.destroy();
         }
-        
+
         // 初始化 ClipboardJS
         this.clipboard = new ClipboardJS('.copy-btn');
       },
