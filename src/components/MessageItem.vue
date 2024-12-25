@@ -35,10 +35,8 @@
           const updatedContent = markdownContent.replace(codeBlockRegex, (match, language, code) => {
             // 建立複製按鈕
             const button = `<button class="copy-btn" data-clipboard-text="${code}">複製</button>`;
-            console.log(button);
             return `${button}<pre><code class="language-${language}">${code}</code></pre>`;
           });
-          console.log(updatedContent);
           return updatedContent;
       },
     },
@@ -74,6 +72,7 @@
   }
 
   .copy-btn {
+    display: none;
     margin-left: 10px; /* 調整邊距 */
     padding: 5px 10px; /* 調整內邊距 */
     background-color: #007bff; /* 設定按鈕背景顏色 */
