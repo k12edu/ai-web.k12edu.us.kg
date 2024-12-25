@@ -1,0 +1,39 @@
+name: Build and Deploy Vue.js to gh-pages
+
+on:
+  push:
+    branches: [ "main" ]  # 當main分支有推送時觸發
+  workflow_dispatch:      # 允許手動觸發
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write     # 需要寫入權限來推送到gh-pages分支
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Copy CNAME file
+        run: echo 'ai-web.k12edu.us.kg' > ./dist/CNAME # 定義的網域名稱
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist  # Vue.js 默認的建置輸出目錄
+          publish_branch: gh-pages
