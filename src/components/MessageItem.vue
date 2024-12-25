@@ -37,15 +37,12 @@
             const button = `<button class="copy-btn" data-clipboard-text="${code}">複製</button>`;
             return `${button}<pre><code class="language-${language}">${code}</code></pre>`;
           });
+          console.log(updatedContent);
           return updatedContent;
       },
     },
     mounted() {
       // 初始化複製按鈕功能
-      this.$nextTick(() => {
-        // 初始化複製按鈕功能
-        new ClipboardJS('.copy-btn');
-      });
       new ClipboardJS('.copy-btn');
     },
   };
