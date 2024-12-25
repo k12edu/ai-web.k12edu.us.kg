@@ -172,7 +172,7 @@ export default {
                 
                 // 這裡處理每段返回的 JSON 資料
                 console.log(parsedData.data.answer); // 顯示答案部分
-                if ((parsedData.data.answer != undefined || parsedData.data.answer!='') || parsedData.data.answer.slice(0,9)=="**ERROR**") {
+                if ((parsedData.data.answer != undefined || parsedData.data.answer!='') && parsedData.data.answer.slice(0,9)=="**ERROR**") {
                   this.messages.push({ content: '出現錯誤，請換一句話重新傳送!', isUser: false });
                   done=true;
                   break;
