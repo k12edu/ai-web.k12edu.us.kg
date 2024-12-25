@@ -141,6 +141,7 @@ export default {
           this.messages.push({ content: '出現錯誤，請換一句話重新傳送!', isUser: false });
           throw new Error(`HTTP error! status: ${response.status}`);
         }
+        
         // 讀取 response 的流資料
         const reader = response.body.getReader();
         let decoder = new TextDecoder();
@@ -171,6 +172,11 @@ export default {
                 
                 // 這裡處理每段返回的 JSON 資料
                 console.log(parsedData.data.answer); // 顯示答案部分
+                if ((parsedData.data.answer != undefined || parsedData.data.answer!='') || parsedData.data.answer.slice(0,9)=="**ERROR**") {
+                  this.messages.push({ content: '出現錯誤，請換一句話重新傳送!', isUser: false });
+                  done=true;
+                  break;
+                }
                 if((parsedData.data.answer != undefined || parsedData.data.answer!='')&& first_push==false){
                   this.messages.push({ content: parsedData.data.answer, isUser: false });
                   first_push=true;
