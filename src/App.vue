@@ -160,7 +160,7 @@ export default {
 
           // 按行處理返回的每段資料
           let lines = result.split('\n');
-
+          
           // 可能剩下未完全接收到的數據，保留最後一行並繼續
           result = lines.pop();
           console.log(lines);
@@ -175,7 +175,7 @@ export default {
                 
                 // 這裡處理每段返回的 JSON 資料
                 console.log(parsedData.data.answer); // 顯示答案部分
-                if ((parsedData.data.answer != undefined && parsedData.data.answer!='') && parsedData.data.answer.slice(0,9)=="**ERROR**") {
+                if ((parsedData.data.answer != undefined && parsedData.data.answer!='') && (parsedData.data.answer.slice(0,9)=="**ERROR**" || parsedData.data.answer.length>=5000)) {
                   this.messages.push({ content: '出現錯誤，請換一句話重新傳送!', isUser: false });
                   done=true;
                   break;
