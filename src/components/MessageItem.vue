@@ -76,6 +76,19 @@
     border-radius: 12px;
     background-color: #e0e0e0;
     word-wrap: break-word;
+    >>> .copy-btn{
+      margin-left: 10px; /* 調整邊距 */
+      padding: 5px 10px; /* 調整內邊距 */
+      background-color: #007bff !important; /* 設定按鈕背景顏色 */
+      color: white; /* 設定按鈕文字顏色 */
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    >>> .copy-btn:hover{
+      background-color: #0056b3; /* 設定懸停時背景顏色 */
+    }
   }
   
   .user-message .message-content {
@@ -83,18 +96,6 @@
     color: white;
   }
 
-  .copy-btn {
-    margin-left: 10px; /* 調整邊距 */
-    padding: 5px 10px; /* 調整內邊距 */
-    background-color: #007bff !important; /* 設定按鈕背景顏色 */
-    color: white; /* 設定按鈕文字顏色 */
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-
-  .copy-btn:hover {
-    background-color: #0056b3; /* 設定懸停時背景顏色 */
-  }
+  
   </style>
   
