@@ -38,9 +38,6 @@
             console.log(button);
             return `${button}<pre><code class="language-${language}">${code}</code></pre>`;
           });
-          this.$nextTick(() => {
-            this.initializeClipboard();
-          });
           console.log(updatedContent);
           return updatedContent;
       },
