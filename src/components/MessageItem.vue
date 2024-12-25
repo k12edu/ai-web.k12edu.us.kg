@@ -38,8 +38,20 @@
             console.log(button);
             return `${button}<pre><code class="language-${language}">${code}</code></pre>`;
           });
+          this.$nextTick(() => {
+            this.initializeClipboard();
+          });
           console.log(updatedContent);
           return updatedContent;
+      },
+      initializeClipboard() {
+        // 先清理先前的實例
+        if (this.clipboard) {
+          this.clipboard.destroy();
+        }
+        
+        // 初始化 ClipboardJS
+        this.clipboard = new ClipboardJS('.copy-btn');
       },
     },
     mounted() {
