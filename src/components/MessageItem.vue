@@ -35,6 +35,7 @@
           const updatedContent = markdownContent.replace(codeBlockRegex, (match, language, code) => {
             // 建立複製按鈕
             const button = `<button class="copy-btn" data-clipboard-text="${code}">複製</button>`;
+            console.log(button);
             return `${button}<pre><code class="language-${language}">${code}</code></pre>`;
           });
           console.log(updatedContent);
