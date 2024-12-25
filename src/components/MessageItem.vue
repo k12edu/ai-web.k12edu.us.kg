@@ -70,7 +70,7 @@
     color: white;
   }
 
-  .copy-btn {
+  ::v-deep .copy-btn {
     margin-left: 10px; /* 調整邊距 */
     padding: 5px 10px; /* 調整內邊距 */
     background-color: #007bff; /* 設定按鈕背景顏色 */
@@ -80,7 +80,7 @@
     cursor: pointer;
   }
 
-  .copy-btn:hover {
+  ::v-deep .copy-btn:hover {
     background-color: #0056b3; /* 設定懸停時背景顏色 */
   }
   </style>
