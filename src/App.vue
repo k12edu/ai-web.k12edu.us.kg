@@ -82,7 +82,7 @@ export default {
         //const token=this.access_token;
         const data = { name: "new session" };
 
-        const response = await fetch(`http://100.73.132.110:60004/api/v1/chats/b4dbf55cc1c911ef80f40242c0a89006/sessions`, {
+        const response = await fetch(`https://ai.k12edu.us.kg/new_session`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -130,7 +130,7 @@ export default {
         console.log('q='+JSON.stringify(data) );
         //const token=this.access_token;
 
-        const url = 'http://100.73.132.110:60004/api/v1/chats/b4dbf55cc1c911ef80f40242c0a89006/completions';
+        const url = 'https://ai.k12edu.us.kg/chat';
   
         const response = await fetch(url, {
           method: 'POST',
