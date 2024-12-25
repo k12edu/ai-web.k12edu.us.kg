@@ -38,9 +38,6 @@
           return `${button}<pre><code class="language-${language}">${code}</code></pre>`;
         });
         // 確保在 DOM 更新後初始化 ClipboardJS
-        this.$nextTick(() => {
-          this.initializeClipboard();
-        });
         return updatedContent;
       },
 
