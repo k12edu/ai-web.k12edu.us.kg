@@ -36,6 +36,7 @@ export default {
   },
   data() {
     return {
+      is_talk: false,
       question: "",
       api_url: "http://192.168.0.237",
       isLogIn: true,
@@ -53,7 +54,7 @@ export default {
       this.isLogIn=false;
     },
     sendMessage() {
-      if (this.newMessage.trim() === "") return;
+      if (this.newMessage.trim() === "" || this.is_talk) return;
       //this.create_new_conversation();
       this.messages.push({ content: this.newMessage, isUser: true });
       this.question = this.newMessage;
@@ -103,6 +104,8 @@ export default {
       }
     },
     async send_message_to_backend() {
+
+      this.is_talk=true;
       function delay(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
       }
@@ -162,7 +165,7 @@ export default {
           result = lines.pop();
           console.log(lines);
           // 處理每行資料
-         
+          
           for (let line of lines) {
             if (line.startsWith('data:')) {
               // 去除前綴 `data:` 並解析 JSON
@@ -194,6 +197,7 @@ export default {
       } catch (error) {
         console.error('發送請求時出錯：', error);
       }
+      this.is_talk=false;
     }
   },
   mounted(){
