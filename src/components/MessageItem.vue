@@ -1,3 +1,4 @@
+
 <template>
   <div :class="['message-item', { 'user-message': isUser }]">
     <div class="message-content" v-html="formattedContent"></div>
@@ -6,6 +7,7 @@
 
   
   <script>
+  import marked from 'marked';
   export default {
     name: "MessageItem",
     props: {
