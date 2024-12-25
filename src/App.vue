@@ -141,7 +141,7 @@ export default {
           body: JSON.stringify(data) // 傳遞的data
         });
         if (!response.ok && (response.status === 400 || response.status === 500)) {
-          this.messages.push({ content: '出現錯誤，請換一句話重新傳送!', isUser: false });
+          this.messages.push({ content: '出現錯誤，請修改文字敘述內容!', isUser: false });
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         
