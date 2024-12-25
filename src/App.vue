@@ -82,7 +82,7 @@ export default {
         //const token=this.access_token;
         const data = { name: "new session" };
 
-        const response = await fetch(`https://ai.k12edu.us.kg/sessions`, {
+        const response = await fetch(`https://ai.k12edu.us.kg/new_session`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
