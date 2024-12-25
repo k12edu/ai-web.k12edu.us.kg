@@ -42,7 +42,10 @@
     },
     mounted() {
       // 初始化複製按鈕功能
-      new ClipboardJS('.copy-btn');
+      this.$nextTick(() => {
+        // 初始化複製按鈕功能
+        new ClipboardJS('.copy-btn');
+      });
     },
   };
   </script>
