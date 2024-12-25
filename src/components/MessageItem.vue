@@ -35,7 +35,7 @@
         return markdownContent.replace(codeBlockRegex, (match, language, code) => {
           // 建立複製按鈕
           const button = `<button class="copy-btn" data-clipboard-text="${code}">複製</button>`;
-          return `<pre><code class="language-${language}">${code}</code></pre>${button}`;
+          return `${button}<pre><code class="language-${language}">${code}</code></pre>`;
         });
       },
     },
@@ -71,17 +71,17 @@
   }
 
   .copy-btn {
-  background-color: #4CAF50;
+    margin-left: 2;
+  padding: 2px 3;
+  background-color: #007bff;
   color: white;
   border: none;
+  border-radius: 4px;
   cursor: pointer;
-  padding: 5px;
-  margin-left: 10px;
-  border-radius: 3px;
 }
 
 .copy-btn:hover {
-  background-color: #45a049;
+  background-color: #0056b3;
 }
   </style>
   
