@@ -1,8 +1,9 @@
 <template>
-    <div :class="['message-item', { 'user-message': isUser }]">
-      <div class="message-content">{{ content }}</div>
-    </div>
-  </template>
+  <div :class="['message-item', { 'user-message': isUser }]">
+    <div class="message-content" v-html="formattedContent"></div>
+  </div>
+</template>
+
   
   <script>
   export default {
@@ -17,6 +18,12 @@
         required: true,
       },
     },
+    computed: {
+      formattedContent() {
+        // 使用 marked 將 Markdown 格式轉換為 HTML
+        return marked(this.content);
+      },
+    } 
   };
   </script>
   
