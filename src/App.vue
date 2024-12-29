@@ -123,7 +123,7 @@ export default {
           body: JSON.stringify(data) // 傳遞的data
         });
         if (!response.ok && (response.status === 400 || response.status === 500)) {
-          this.messages.push({ content: '出現錯誤，請修改文字敘述內容!', isUser: false });
+          this.messages.push({ content: '回答似乎發生問題，請常識重新連線。', isUser: false });
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         
@@ -161,15 +161,11 @@ export default {
                 //   done = true;
                 //   break;
                 // }
-                try{
-                  if (parsedData.data.answer.slice(0, 9) == "**ERROR**") {
-                  this.messages.push({ content: '伺服器返回錯誤，請稍後再試。', isUser: false });
-                  done = true;
-                  break;
-                  }
-                }catch(error){
-                  console.error("未發生檢索錯誤", error);
-                }
+                // if (parsedData.data.answer.slice(0, 9) == "**ERROR**") {
+                //   this.messages.push({ content: '伺服器返回錯誤，請稍後再試。', isUser: false });
+                //   done = true;
+                //   break;
+                // }
                 if (parsedData.data.answer.length >= 8000) {
                   this.messages.push({ content: '回答似乎發生問題，請常識重新連線。', isUser: false });
                   done = true;
