@@ -156,11 +156,11 @@ export default {
                 const parsedData = JSON.parse(jsonData);
                 
                 console.log(parsedData.data.answer);  // 用來檢查返回的內容
-                if (!parsedData.data.answer || parsedData.data.answer.length === 0) {
-                  this.messages.push({ content: '沒有返回有效的資料，請檢查問題內容。', isUser: false });
-                  done = true;
-                  break;
-                }
+                // if (!parsedData.data.answer || parsedData.data.answer.length === 0) {
+                //   this.messages.push({ content: '沒有返回有效的資料，請檢查問題內容。', isUser: false });
+                //   done = true;
+                //   break;
+                // }
                 if (parsedData.data.answer.slice(0, 9) == "**ERROR**") {
                   this.messages.push({ content: '伺服器返回錯誤，請稍後再試。', isUser: false });
                   done = true;
