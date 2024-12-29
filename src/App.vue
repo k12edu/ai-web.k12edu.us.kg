@@ -161,13 +161,13 @@ export default {
                 //   done = true;
                 //   break;
                 // }
-                // if (parsedData.data.answer.slice(0, 9) == "**ERROR**") {
-                //   this.messages.push({ content: '伺服器返回錯誤，請稍後再試。', isUser: false });
-                //   done = true;
-                //   break;
-                // }
-                if (parsedData.data.answer.length >= 8000) {
-                  this.messages.push({ content: '回答似乎發生問題，請常識重新連線。', isUser: false });
+                if (parsedData.data.answer.slice(0, 9) == "**ERROR**") {
+                  this.messages.push({ content: '伺服器返回錯誤，請稍後再試。', isUser: false });
+                  done = true;
+                  break;
+                }
+                if (parsedData.data.answer.length >= 5000) {
+                  this.messages.push({ content: '回答過長，請換一句話重新傳送!', isUser: false });
                   done = true;
                   break;
                 }
