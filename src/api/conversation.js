@@ -1,68 +1,65 @@
-import { ref } from "vue";
-
-// 定義並導出函數
-export function useConversation() {
-    const is_talk = ref(false);
-    const conversationId = ref(-1);
-    const api_url = "https://ai.k12edu.us.kg";
-
-    // 創建新對話
-    async function create_new_conversation() {
+export async function createNewConversation() {
     try {
+        console.log('請求新的對話');
         const data = { name: "new session" };
-        const response = await fetch(`${api_url}/new_session`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-        });
-
-        if (!response.ok) throw new Error("Failed to create conversation");
-
-        const result = await response.json();
-        if (result.data?.id) {
-        conversationId.value = result.data.id;
-        }
-    } catch (error) {
-        console.error("Error:", error);
-    }
-    }
-
-    // 發送訊息
-    async function sendMessage(newMessage, messages) {
-    if (newMessage.trim() === "" || is_talk.value) return;
-
-    messages.push({ content: newMessage, isUser: true });
-    const data = {
-        question: newMessage,
-        stream: true,
-        session_id: conversationId.value, 
-    };
-
-    try {
-        const response = await fetch(`${api_url}/chat`, {
+        const response = await fetch(`https://ai.k12edu.us.kg/new_session`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ragflow-hhOGY2ZDYwYzViYjExZWZiMWE1MDI0Mm',
+            'Authorization': 'Bearer ragflow-hhOGY2ZDYwYzViYjExZWZiMWE1MDI0Mm'
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(data)
         });
 
         if (!response.ok) {
-        throw new Error(`API請求錯誤，狀態：${response.status}`);
+        throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const result = await response.json();
+        return result.data.id;  // 回傳會話 ID
+    } catch (error) {
+        console.error('發送請求時出錯：', error);
+        throw error;
+    }
+    }
+
+    export async function sendMessageToBackend(question, conversationId) {
+    try {
+        if (conversationId === -1) {
+        throw new Error('Invalid conversation ID');
+        }
+
+        const data = {
+        question,
+        stream: true,
+        session_id: conversationId
+        };
+
+        console.log('發送訊息(流狀態)', data);
+        
+        const url = 'https://ai.k12edu.us.kg/chat';
+        const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ragflow-hhOGY2ZDYwYzViYjExZWZiMWE1MDI0Mm`
+        },
+        body: JSON.stringify(data)
+        });
+
+        if (!response.ok && (response.status === 400 || response.status === 500)) {
+        throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
-        let done = false;
         let result = '';
-        let firstPush = false;
+        let done = false;
 
         while (!done) {
         const { value, done: doneReading } = await reader.read();
         done = doneReading;
-        result += decoder.decode(value, { stream: true });
 
+        result += decoder.decode(value, { stream: true });
         const lines = result.split('\n');
         result = lines.pop();
 
@@ -71,41 +68,19 @@ export function useConversation() {
             const jsonData = line.slice(5).trim();
             try {
                 const parsedData = JSON.parse(jsonData);
-                const answer = parsedData.data?.answer;
-                if (answer) {
-                if (answer.startsWith("**ERROR**") || answer.length >= 5000) {
-                    messages.push({ content: '出現錯誤，請換一句話重新傳送!', isUser: false });
-                    done = true;
-                    break;
+                if (parsedData.data.answer.slice(0, 9) === "**ERROR**") {
+                throw new Error('伺服器返回錯誤，請稍後再試。');
                 }
-
-                if (!firstPush) {
-                    messages.push({ content: answer, isUser: false });
-                    firstPush = true;
-                } else {
-                    messages[messages.length - 1].content = answer;
-                }
-                }
+                return parsedData.data.answer;
             } catch (error) {
-                console.error('解析 JSON 失敗：', error);
+                console.error('Failed to parse JSON:', error);
+                throw error;
             }
             }
         }
         }
-
     } catch (error) {
         console.error('發送請求時出錯：', error);
-        messages.push({ content: "當前 AI 學習助手離線中，請稍後再嘗試與其交流", isUser: false });
-    } finally {
-        is_talk.value = false;
+        throw error;
     }
-    }
-
-    // 返回函數
-    return {
-        is_talk,
-        conversationId,
-        create_new_conversation,
-        sendMessage,
-    };
 }
