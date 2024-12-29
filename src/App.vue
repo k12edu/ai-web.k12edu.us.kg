@@ -26,8 +26,7 @@
 <script>
 import MessageItem from "./components/MessageItem.vue";
 import NavItem from "./components/nav.vue";
-import { useConversation } from "./api/conversation.js";
-import { useAuth } from "./api/auth.js";
+import { computed } from 'vue';
 
 export default {
   name: "App",
@@ -37,25 +36,172 @@ export default {
   },
   data() {
     return {
+      is_talk: false,
+      question: "",
+      api_url: "http://192.168.0.237",
+      isLogIn: true,
+      userId: 1,
+      conversationId: -1,
       newMessage: "",
-      messages: [],
+      messages: [
+        { content: "你好！有什麼需要幫忙的嗎？", isUser: false },
+      ],
+      json_web_token: "",
     };
   },
   methods: {
-    logout() {
-      useAuth().logout();
+    logout(){
+      this.isLogIn=false;
     },
     sendMessage() {
-      useConversation().sendMessage(this.newMessage, this.messages);
+      if (this.newMessage.trim() === "" || this.is_talk) return;
+      //this.create_new_conversation();
+      this.messages.push({ content: this.newMessage, isUser: true });
+      this.question = this.newMessage;
       this.newMessage = "";
+      this.send_message_to_backend();
     },
+    async create_new_conversation() {
+      try {
+        console.log('請求新的對話')
+        const data = { name: "new session" };
+        const response = await fetch(`https://ai.k12edu.us.kg/new_session`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ragflow-EyNDY4NjRlYzFjYTExZWZiMmJmMDI0Mm'
+          }, 
+          body: JSON.stringify(data) 
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const result = await response.json();
+        this.conversationId = result.data.id;
+        console.log(result);
+        console.log('id=',this.conversationId);
+      } catch (error) {
+        console.error('發送請求時出錯：', error);
+      }
+    },
+    async send_message_to_backend() {
+
+      this.is_talk=true;
+      function delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+      try {
+        if(this.conversationId==-1){
+          this.create_new_conversation();
+          await delay(4000); 
+        }
+        if(this.conversationId==-1){
+          this.messages.push({
+            content: "建立對話失敗。",
+            isUser: false,
+          });
+        }
+        console.log('發送訊息(流狀態)')
+        const data={
+          'question': this.question,
+          'stream': true,
+          'session_id': this.conversationId
+        }
+        console.log(data);
+        console.log('q='+JSON.stringify(data) );
+        //const token=this.access_token;
+
+        const url = 'https://ai.k12edu.us.kg/chat';
+  
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ragflow-EyNDY4NjRlYzFjYTExZWZiMmJmMDI0Mm`
+          },
+          body: JSON.stringify(data) // 傳遞的data
+        });
+        if (!response.ok && (response.status === 400 || response.status === 500)) {
+          this.messages.push({ content: '出現錯誤，請修改文字敘述內容!', isUser: false });
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        // 讀取 response 的流資料
+        const reader = response.body.getReader();
+        let decoder = new TextDecoder();
+        let done = false;
+        let result = '';
+        let first_push=false;
+        while (!done) {
+          const { value, done: doneReading } = await reader.read();
+          done = doneReading;
+
+          // 將二進位數據解碼為字符串
+          result += decoder.decode(value, { stream: true });
+
+          // 按行處理返回的每段資料
+          let lines = result.split('\n');
+          
+          // 可能剩下未完全接收到的數據，保留最後一行並繼續
+          result = lines.pop();
+          console.log(lines);
+          // 處理每行資料
+          
+          for (let line of lines) {
+            if (line.startsWith('data:')) {
+              // 去除前綴 `data:` 並解析 JSON
+              const jsonData = line.slice(5).trim();
+              try {
+                const parsedData = JSON.parse(jsonData);
+                
+                // 這裡處理每段返回的 JSON 資料
+                console.log(parsedData.data.answer); // 顯示答案部分
+                if ((parsedData.data.answer != undefined && parsedData.data.answer!='') && (parsedData.data.answer.slice(0,9)=="**ERROR**" || parsedData.data.answer.length>=5000)) {
+                  this.messages.push({ content: '出現錯誤，請換一句話重新傳送!', isUser: false });
+                  done=true;
+                  break;
+                }
+                if((parsedData.data.answer != undefined && parsedData.data.answer!='')&& first_push==false){
+                  this.messages.push({ content: parsedData.data.answer, isUser: false });
+                  first_push=true;
+                }
+                else if((parsedData.data.answer != undefined && parsedData.data.answer!='' )&& parsedData.data.answer && this.messages.length>0){
+                  this.messages[this.messages.length-1].content=parsedData.data.answer;
+                }
+              } catch (error) {
+                console.error('Failed to parse JSON:', error);
+              }
+            }
+          }
+        }
+
+      } catch (error) {
+        console.error('發送請求時出錯：', error);
+      }
+      this.is_talk=false;
+    }
   },
-  mounted() {
-    useConversation().create_new_conversation();
+  mounted(){
+    // 取得網址中的查詢參數
+    const queryString = window.location.search;
+
+    // 使用 URLSearchParams 解析查詢參數
+    const urlParams = new URLSearchParams(queryString);
+
+    // 取得特定的請求關鍵字
+    const keyword = urlParams.get('id'); // 假設關鍵字參數名稱是 'keyword'
+    this.json_web_token=keyword;
+    console.log('id:', keyword);
   },
+  provide(){
+    return{
+      isLogIn : computed(() => this.isLogIn),
+      logout: this.logout,
+    }
+  }
 };
 </script>
-
 
 <style scoped>
 #app{
