@@ -86,7 +86,7 @@ export default {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ragflow-EyNDY4NjRlYzFjYTExZWZiMmJmMDI0Mm'
+            'Authorization': 'Bearer ragflow-hhOGY2ZDYwYzViYjExZWZiMWE1MDI0Mm'
             // 'Authorization': `Bearer ${token}`
           }, 
           body: JSON.stringify(data) 
@@ -136,7 +136,7 @@ export default {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ragflow-EyNDY4NjRlYzFjYTExZWZiMmJmMDI0Mm`
+            'Authorization': `Bearer ragflow-hhOGY2ZDYwYzViYjExZWZiMWE1MDI0Mm`
           },
           body: JSON.stringify(data) // 傳遞的data
         });
