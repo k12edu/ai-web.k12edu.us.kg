@@ -44,7 +44,7 @@ export default {
       conversationId: -1,
       newMessage: "",
       messages: [
-        { content: "你好！有什麼需要幫忙的嗎？", isUser: false },
+        { content: "我是 k12edu 提供的 AI 學習助手，用於回答使用者在學習時遇到的問題，請問需要幫忙嗎？", isUser: false },
       ],
       json_web_token: "",
     };
@@ -69,7 +69,7 @@ export default {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ragflow-EyNDY4NjRlYzFjYTExZWZiMmJmMDI0Mm'
+            'Authorization': 'Bearer ragflow-hhOGY2ZDYwYzViYjExZWZiMWE1MDI0Mm'
           }, 
           body: JSON.stringify(data) 
         });
@@ -118,7 +118,7 @@ export default {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ragflow-EyNDY4NjRlYzFjYTExZWZiMmJmMDI0Mm`
+            'Authorization': `Bearer ragflow-hhOGY2ZDYwYzViYjExZWZiMWE1MDI0Mm`
           },
           body: JSON.stringify(data) // 傳遞的data
         });
@@ -155,11 +155,20 @@ export default {
               try {
                 const parsedData = JSON.parse(jsonData);
                 
-                // 這裡處理每段返回的 JSON 資料
-                console.log(parsedData.data.answer); // 顯示答案部分
-                if ((parsedData.data.answer != undefined && parsedData.data.answer!='') && (parsedData.data.answer.slice(0,9)=="**ERROR**" || parsedData.data.answer.length>=5000)) {
-                  this.messages.push({ content: '出現錯誤，請換一句話重新傳送!', isUser: false });
-                  done=true;
+                console.log(parsedData.data.answer);  // 用來檢查返回的內容
+                if (!parsedData.data.answer || parsedData.data.answer.length === 0) {
+                  this.messages.push({ content: '沒有返回有效的資料，請檢查問題內容。', isUser: false });
+                  done = true;
+                  break;
+                }
+                if (parsedData.data.answer.slice(0, 9) == "**ERROR**") {
+                  this.messages.push({ content: '伺服器返回錯誤，請稍後再試。', isUser: false });
+                  done = true;
+                  break;
+                }
+                if (parsedData.data.answer.length >= 5000) {
+                  this.messages.push({ content: '回答過長，請換一句話重新傳送!', isUser: false });
+                  done = true;
                   break;
                 }
                 if((parsedData.data.answer != undefined && parsedData.data.answer!='')&& first_push==false){
