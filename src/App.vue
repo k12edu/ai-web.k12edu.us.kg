@@ -36,56 +36,71 @@ export default {
   },
   data() {
     return {
-      is_talk: false, // 是否正在對話
-      question: "", // 使用者的問題
-      api_url: "https://ai.k12edu.us.kg", // API 的基礎 URL
-      isLogIn: true, // 使用者是否已登入
-      userId: 1, // 使用者 ID
-      conversationId: -1, // 對話 ID，初始為 -1 表示尚未建立
-      newMessage: "", // 新的訊息內容
-      messages: [], // 訊息列表，初始為空
-      json_web_token: "", // JSON Web Token，用於身份驗證
+      is_talk: false,
+      question: "",
+      api_url: "http://192.168.0.237",
+      isLogIn: true,
+      userId: 1,
+      conversationId: -1,
+      newMessage: "",
+      messages: [
+        { content: "你好！有什麼需要幫忙的嗎？", isUser: false },
+      ],
+      json_web_token: "",
     };
   },
   methods: {
-    logout() {
-      this.isLogIn = false; // 登出，將登入狀態設為 false
+    logout(){
+      this.isLogIn=false;
     },
-    async sendMessage() {
-      if (this.newMessage.trim() === "" || this.is_talk) return; // 若訊息為空或正在對話，則不執行
-      this.messages.push({ content: this.newMessage, isUser: true }); // 新增使用者訊息至訊息列表
-      this.question = this.newMessage; // 將新訊息內容設為當前問題
-      this.newMessage = ""; // 清空輸入框
-      await this.send_message_to_backend(); // 發送訊息至後端
+    sendMessage() {
+      if (this.newMessage.trim() === "" || this.is_talk) return;
+      //this.create_new_conversation();
+      this.messages.push({ content: this.newMessage, isUser: true });
+      this.question = this.newMessage;
+      this.newMessage = "";
+      this.send_message_to_backend();
+      // 新增使用者訊息
+      
+      // 模擬對方回覆
+      // setTimeout(() => {
+      //   this.messages.push({
+      //     content: "這是自動回覆的訊息。",
+      //     isUser: false,
+      //   });
+      // }, 1000);
+
+      // 清空輸入框
+      
     },
     async create_new_conversation() {
       try {
-        console.log('請求建立新對話。');
-        const data = { name: "new session" }; // 請求的資料內容
+        console.log('request to create new conversation.')
+        // const data={
+          
+        // }
+        //const token=this.access_token;
+        const data = { name: "new session" };
 
-        const response = await fetch(`${this.api_url}/new_session`, {
+        const response = await fetch(`https://ai.k12edu.us.kg/new_session`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ragflow-hhOGY2ZDYwYzViYjExZWZiMWE1MDI0Mm' // 使用固定的 Bearer Token
-          },
-          body: JSON.stringify(data) // 將資料轉換為 JSON 字串
+            'Authorization': 'Bearer ragflow-hhOGY2ZDYwYzViYjExZWZiMWE1MDI0Mm'
+            // 'Authorization': `Bearer ${token}`
+          }, 
+          body: JSON.stringify(data) 
         });
 
         if (!response.ok) {
-          throw new Error(`HTTP 錯誤！狀態：${response.status}`);
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
-
         const result = await response.json();
-        if (result.data && result.data.id) {
-          this.conversationId = result.data.id; // 設定對話 ID
-          console.log('新對話已建立，ID=', this.conversationId);
-        } else {
-          throw new Error('回應資料中缺少 id 參數。');
-        }
+        this.conversationId = result.data.id;
+        console.log(result);
+        console.log('id=',this.conversationId);
       } catch (error) {
         console.error('發送請求時出錯：', error);
-        alert("當前 AI 學習助手離線中，請稍後再嘗試與其交流"); // 顯示錯誤訊息
       }
     },
     async send_message_to_backend() {
@@ -120,10 +135,10 @@ export default {
         });
 
         if (!response.ok) {
-          if (response.status === 400 || response.status === 500) {
-            this.messages.push({ content: '出現錯誤，請修改文字敘述內容!', isUser: false });
-          }
-          throw new Error(`HTTP 錯誤！狀態：${response.status}`);
+          const errorData = await response.json();
+          const errorMessage = errorData.message || '發生未知錯誤';
+          this.messages.push({ content: `錯誤：${errorMessage}`, isUser: false });
+          throw new Error(`HTTP 錯誤！狀態：${response.status}，訊息：${errorMessage}`);
         }
 
         const reader = response.body.getReader();
@@ -171,21 +186,28 @@ export default {
         alert("當前 AI 學習助手離線中，請稍後再嘗試與其交流"); // 顯示錯誤訊息
       }
       this.is_talk = false; // 結束對話狀態
-    }
+    },
   },
-  async mounted() {
-    // 在組件掛載後立即嘗試建立新對話
-    await this.create_new_conversation();
+  mounted(){
+    // 取得網址中的查詢參數
+    const queryString = window.location.search;
+
+    // 使用 URLSearchParams 解析查詢參數
+    const urlParams = new URLSearchParams(queryString);
+
+    // 取得特定的請求關鍵字
+    const keyword = urlParams.get('id'); // 假設關鍵字參數名稱是 'keyword'
+    this.json_web_token=keyword;
+    console.log('id:', keyword);
   },
-  provide() {
-    return {
-      isLogIn: computed(() => this.isLogIn),
+  provide(){
+    return{
+      isLogIn : computed(() => this.isLogIn),
       logout: this.logout,
-    };
+    }
   }
 };
 </script>
-
 
 <style scoped>
 #app{
